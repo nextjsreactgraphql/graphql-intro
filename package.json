@@ -1,0 +1,32 @@
+{
+  "name": "graphql-intro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "hello-world-test": "vitest --run src/hello-world.test.ts",
+    "test": "vitest",
+    "graphql:codegen": "graphql-codegen",
+    "graphql:codegen:watch": "graphql-codegen -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1",
+  "dependencies": {
+    "@apollo/client": "^3.12.9",
+    "@apollo/experimental-nextjs-app-support": "^0.11.8",
+    "@graphql-typed-document-node/core": "^3.2.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.4",
+    "@graphql-codegen/typescript-document-nodes": "^4.0.13",
+    "@parcel/watcher": "^2.5.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "graphql-tag": "^2.12.6",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.5"
+  }
+}

@@ -1,0 +1,2 @@
+schema: https://publy-fullstack-example.fly.dev/graphql
+documents: 'src/**/*.graphql'

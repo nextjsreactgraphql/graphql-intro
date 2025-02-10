@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>GraphQL Basics</title>
+
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reset.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reveal.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/theme/solarized.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="revealjs/highlight-js-github-theme.css" />
+    <link rel="stylesheet" href="revealjs/styles.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-state="title">
+          <h4 style="margin-bottom: 3rem; font-size: 3rem">
+            <span class="transparent-bg">
+              <a href="https://nilshartmann.net" target="_blank"
+                >Nils Hartmann</a
+              >
+              |
+              <a href="https://twitter.com/nilshartmann" target="_blank"
+                >@nilshartmann</a
+              >
+            </span>
+          </h4>
+          <h2 class="title" style="font-size: 7rem">
+            <b>GraphQL Basics</b>
+          </h2>
+
+
+        </section>
+        <section>
+          <h2>Nils Hartmann</h2>
+          <p style="margin-top: 2rem">
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+            /
+            <a href="https://twitter.com/nilshartmann" target="_blank"
+              >@nilshartmann</a
+            >
+          </p>
+          <p style="margin-top: 2rem">
+            <em
+              >Freiberuflicher Software-Entwickler, Berater und Trainer aus
+              Hamburg</em
+            >
+          </p>
+          <p></p>
+          <p style="margin-top: 5rem">
+            Java | JavaScript, TypeScript | React | GraphQL
+          </p>
+          <div style="display: flex; justify-content: center; margin-top: 2rem">
+            <div style="margin-left: 15px">
+              <a href="https://graphql.schule/video-kurs"
+                ><img
+                  style="max-height: 450px"
+                  src="images/screenshot-graphql-kurs.png"
+                /><br />https://graphql.schule/video-kurs</a
+              >
+              <br />
+            </div>
+            <!--  -->
+            <div style="margin-left: 100px">
+              <a href="https://reactbuch.de"
+                ><img
+                  style="max-height: 450px"
+                  src="images/react-buch-v2.jpg"
+                /><br />https://reactbuch.de</a
+              >
+              <br />
+            </div>
+          </div>
+        </section>
+
+
+
+        <section data-markdown>
+          <textarea data-template>
+
+
+# GraphQL
+
+
+_"GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data"_ ([https://graphql.org](https://graphql.org))
+
+---
+
+# GraphQL
+
+
+_"GraphQL is a **query language for APIs** and a runtime for fulfilling those queries with your existing data"_ ([https://graphql.org](https://graphql.org))
+
+---
+<!-- .slide: data-transition="none" -->
+
+# GraphQL
+
+_"GraphQL is a query language for APIs and a **runtime for fulfilling** those queries with your existing data"_ ([https://graphql.org](https://graphql.org))
+
+---
+<!-- .slide: data-transition="none" -->
+
+# GraphQL
+
+_"GraphQL is a query language for APIs and a runtime for fulfilling those queries with **your existing data**"_ ([https://graphql.org](https://graphql.org))
+
+---
+
+## Spezifikation
+
+* https://spec.graphql.org/
+* Umfasst:
+  * Query Sprache und -Ausführung
+  * Schema Definition Language
+* Kein fertiges Produkt, keine fertige Bibliothek
+   * Es gibt Bibliotheken, die dir helfen, GraphQL APIs zu implementieren und bereitzustellen
+   * Die abgefragten Daten müssen wir selbst ermitteln
+* Ihr müsst bei unterschiedlichen Aussagen darauf achten, ob es um den GraphQL Standard geht oder um proprietäre Erweiterungen
+
+
+---
+
+## Beispiel: GraphiQL
+
+<img style="border: 1px solid grey" src="images/screenshot-graphiql.png" />
+
+[http://localhost:8080](http://localhost:8080)
+
+---
+
+
+## Beispiel: GraphQL Tooling
+
+* <!-- .element: class="demo" --> IntelliJ IDEA
+  * <!-- .element: class="demo" --> graphql-Extension (hello.graphql)
+  * <!-- .element: class="demo" --> GraphQL.md im publy-Verzeichnis
+  * <!-- .element: class="demo" --> language=GraphQL in einer leeren Java-Datei
+
+---
+
+<!-- .slide: id="graphql-sprache" -->
+# Die GraphQL Abfrage-Sprache
+---
+
+### Sprache, um **Felder** aus einem **Objekt-Graphen** abzufragen
+
+```graphql
+  query {
+    story {
+      id
+      title
+      writer { name }
+    }
+  }
+
+---
+
+### Felder können **Argumente** haben
+
+<pre><code class="graphql">
+  query {
+    story(storyId: 5) {
+      id
+      title
+      writer { name }
+    }
+  }
+</code></pre>
+
+---
+
+### Die **Antwort** sieht immer so aus, wie die Abfrage
+
+<img src="images/query-antwort.png" />
+
+---
+
+### Operation-Type
+
+Ausgeführt werden **Operationen**.
+Der **Operation-Type** beschreibt, was in der Anfrage getan werden soll
+
+* **query**: Daten lesen (Default-Operation, Schlüsselwort "query" kann weggelassen werden)
+* **mutation**: Daten verändern
+* **subscription**: Daten vom Server bekommen, sobald sie erzeugt wurden (ähnlich wie Events)
+
+
+---
+
+
+### Operation-Type
+
+Der Operation-Type bestimmt auch den Einstiegspunkt in den Objekt-Graphen
+
+<img src="images/einstiegspunkte.png" />
+
+---
+
+### Namen von Operationen
+
+* Operationen können **Namen** haben.
+* Das ist vor allem für Debugging und Code-Generatoren relevant
+* Der Name wird hinter den Operation Type (`query`) geschrieben
+
+* <pre class="fragment"><code class="graphql">
+query NewestStory {
+    story {
+      id
+      title
+    }
+}
+</code></pre>
+---
+## Übung
+### Grundlagen der GraphQL Query Sprache
+---
+
+## Übung: Einen Query ausführen
+
+_Mach' dich mit der GraphQL-Abfragesprache vertraut_
+
+* Öffne GraphiQL (URL gebe ich dir)
+* Aufgabenbeschreibung gebe ich dir
+* Du kannst Code-Completion und den `Docs`-Explorer (rechts oben) verwenden, um die API zu untersuchen
+
+---
+### Variablen
+
+* Operationen (Queries, Mutations) können **Variablen** haben.
+* Variablen müssen in der Operation deklariert werden
+* Der Name einer Variable muss mit einem `$`-Zeichen anfangen
+* Für jede Variable muss deren Typ angegeben werden
+* Innerhalb der Operation kannst du die Variablen dann überall dort verwenden, wo du z.B. Argumente
+            hinschreiben musst
+  * GraphQL stellt sicher, dass Typ der Variablen und des Arguments passen
+  * Wie in einer Programmiersprache
+* Die Werte für Variablen werden in einem eigenen JSON-Objekt an den Server geschickt
+* In GraphiQL kannst du den `Variables`-Tab (unten) verwenden, um die Werte für die Variablen
+  eines Queries anzugeben
+  * Achtung: Das muss in GraphiQL gültiger JSON (!) Code sein
+
+* ```graphql
+  query GetStory ($storyId: ID!) {
+    story(id: $storyId) {
+      id
+      title body
+    }
+  }
+  ```
+
+---
+### Übung: Variablen
+
+* Aufgabenbeschreibung gebe ich dir
+
+---
+### Fragmente
+
+* Mit einem **Fragment** beschreibst Du eine wiederverwendbare Menge von Feldern
+* ```graphql
+  fragment BaseStory on Story {
+      id date
+      writer { name }
+  }
+  ```
+* ```graphql
+  query {
+      story(storyId: "S_1") {
+        ...BaseStory
+      }
+  }
+  ```
+* Du kannst die Felder aus dem Fragment bei der Verwendung im Query _erweitern_:
+* ```graphql
+  query {
+      stories(pageSize: 3) {
+        results {
+          ...BaseStory
+          category
+          body
+        }
+      }
+  }
+  ```
+---
+## Übung: Fragmente
+
+* Aufgabenbeschreibung kopiere ich euch
+---
+### Union-Typen
+
+* Ein **Union-Type** kann mehr als einen Typ zurückliefern
+* Beispiel: `Writer.Contact`
+* Felder, die einen Union-Typen zurückliefern, müssen mit einem Fragment abgefragt werden
+* Es werden jeweils die "passenden" Felder zurückgeliefert, die auf den hinter `on` angegebenen Typen passen
+* Es kann dafür ein bestehendes oder "inline" Fragment verwendet werden
+---
+### Union Types im Schema
+```graphql
+
+type EMailContact {
+    email: String!
+}
+
+type PhoneContact {
+    phone: String!
+}
+
+union Contact = EMailContact | PhoneContact
+```
+### Verwendung
+```graphql
+query {
+  story { writer {
+            contact {
+            ...on EMailContact { email }
+            ...on PhoneContact { phone }
+            }
+         }
+}
+```
+---
+### Interfaces
+* Die Ausprägungen eines Union Types brauchen keine Gemeinsamkeiten zu haben
+* Mit einem Interface kannst du Felder definieren, die in mehreren Typen vorhanden sein sollen
+```graphql
+interface Node { id: ID! }
+type Story { id: ID! title: String! }
+type Comment { id: ID! text: String! }
+```
+* Beim Abfragen eines Feldes, das ein Interface zurückliefert, kannst du die gemeinsamen Felder direkt abfragen
+* Für die Typ-spezifischen Felder musst du wieder ein Fragment verwenden (wie beim Union Typen)
+```graphql
+query {
+  node(nodeId: "...") {
+    # id kommt in allen "Nodes" vor
+    id
+    # text kommt nur im Comment vor:
+    ...on Comment { text }
+  }
+}
+```
+---
+### Übung: Union Type
+- Aufgabenbeschreibung gebe ich dir
+
+---
+### Mutations
+
+* Eine Mutation wird zum Ändern von Daten verwendet
+* Syntaktisch gibt es keinen Unterschied zu einer Query
+* Oft liefern Mutations einen Union Type zurück, mit dem der Server ausdrücken kann, ob eine Mutation erfolgreich war oder es einen Fehler gab
+
+* ```graphql
+    mutation  addComment
+        (input: { storyId: "1", content: "..." }) {
+
+        ...on AddCommentSuccessPayload {
+          newComment { id }
+        }
+
+        ...on AddCommentFailurePayload {
+          errorMessage
+        }
+    }
+  ```
+
+---
+### Übung: Mutations
+
+* Baue eine Mutation, die einen neuen Kommentar zu einer bestehenden Story anlegt
+  * Wenn die Mutation erfolgreich war, soll die Id der Story zurückgeliefert werden
+  * Wenn die Mutation fehlerhaft war, soll die Fehlermeldung zurückgeliefert werden
+  * (Du kannst einen Fehler provozieren, in dem du einen Kommentar `text` übergibst, der kürzer als fünf Zeichen lang ist
+---
+
+### GraphQL Requests
+
+* <!-- .element: class="demo" --> HTTP Request an die GraphQL API
+  * <!-- .element: class="demo" --> request.http im publy-Ordner
+  * <!-- .element: class="demo" --> Fehler zeigen
+---
+
+## GraphQL Requests
+
+* Üblicherweise nur HTTP POST-Request
+  * andere HTTP Verben spielen keine Rolle
+  * HTTP Status-Code meist 200 OK, auch im Fehlerfall!
+  * Großer Unterscheid zu REST APIs
+* Antwort-JSON-Objekt besteht aus maximal drei Feldern:
+  * `data`: Die gelesenen Daten (Struktur darunter entspricht der Abfrage)
+  * `errors`: Liste mit (technischen) Fehlern, u.a. Fehlermeldung
+  * `extensions`: Freibelegbares Objekt für proprietäre Erweiterungen (z.B. Debug-Informationen)
+* In Spring wird [Spring WebMVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html) oder [Spring WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html#webflux) für die HTTP API verwendet
+
+---
+
+<!-- .slide: id="graphql-apis-bereitstellen" -->
+# Exkurs: GraphQL Schema
+
+---
+<!-- .slide: id="schema" -->
+### Exkurs:  Das GraphQL Schema
+
+* GraphQL APIs müssen in einem Schema beschrieben werden.
+* In dem Schema werden Objekte (Typen) mit Feldern beschrieben.
+* Das Schema selbst ist zur Laufzeit mit einem _Introspection Query_ abfragbar
+
+---
+
+### Beschreibung des Schemas
+
+* Mit der [Schema Definition Language](https://graphql.org/learn/schema/)
+
+Beschreibung eines *Objekt Types*
+
+<pre><code class="graphql">
+  type Story {
+    id: ID!
+
+    title: String!
+    body: String!
+  }
+</code></pre>
+
+* Beschrieben werden **Felder** mit **Return Types**
+* Ein Ausrufezeichen zeigt an, dass das Feld nicht _nullable_ ist
+
+---
+
+### Dokumentation und Kommentare
+
+* Dokumentation mit drei doppelten Anführungszeichen
+  * Markdown zur Formatierung erlaubt
+* Kommentare mit Hash-Zeichen
+  * Dokumentation ist Bestandteil der API, Kommentare nicht
+
+* ```graphql
+  """
+  A `Story` is the main object in our service.
+  """
+  type Story {
+    """Identifies this object"""
+    id: ID!
+
+    # todo: implement new tags-field (PROJ-666)
+  }
+  ```
+
+---
+
+## Skalare Typen
+
+* Skalare Typen entsprechen primitiven Typen in Java
+  * Sind die Enden im Objekt-Graphen
+* Standard-Typen: ID, String, Boolean, Int, Float
+  * ID wird als String gelesen und geschrieben, soll aber nicht interpretiert werden
+
+
+* ```graphql
+  type Member {
+    id: ID!
+
+    username: String!
+
+    # no exclamation mark: can be null
+    likes: Int
+
+    amount: Float!
+
+    activeMember: Boolean
+  }
+  ```
+
+
+* Man kann eigene skalare Typen bauen
+---
+
+### Aufzählungstypen (enum)
+
+* <!-- .element: style="min-width: 500px" -->
+  ```graphql
+  enum ReactionType {
+    like,
+    laugh,
+    thumbUp
+  }
+  ```
+
+---
+
+### Referenzen
+
+* Referenzen auf andere Objekt-Typen
+
+* <!-- .element: style="min-width: 900px" -->
+  ```graphql
+  type Member {
+    # ...
+  }
+
+  type Comment {
+    # ...
+  }
+
+  type Story {
+    """Reference to the Member that has written this Story"""
+    writtenBy: Member!
+
+    comments: [Comment!]!
+
+  }
+  ```
+
+---
+
+### Argumente
+
+* Felder können Argumente haben
+  * Solche Felder werden auch _Methoden_ genannt
+* Die Felder mit ihren Namen und Typen müssen in der API definiert werden
+  * Namen sind entscheidend (wie "named arguments" in Kotlin), nicht Reihenfolge (wie in Java)
+* Argumente können Default-Werte haben
+* Achtung! Argumente dürfen keine Objekt-Typen sein!
+
+
+* ```graphql
+  type Story {
+
+    # Mandatory argument maxLength, defaults to 20
+    #  if not specified by the client
+    excerpt(maxLength: Int! = 20): String!
+
+  }
+  ```
+
+---
+
+### Root-Typen
+
+* Root-Typen bilden den Einstiegspunkt für Queries in den Objekt-Graphen
+* Root-Typen sind **Query**, **Mutation** und **Subscription**
+  * **Query** ist Pflicht, die beiden anderen Typen optional
+* Syntax und Verhalten genauso wie bei Objekt-Typen
+* Felder an den Root-Typen werden auch **Root-Felder** genannt
+
+
+* ```graphql
+  type Query {
+    """Returns a List of all stories"""
+    stories: [Story!]!
+
+    """Returns a story by its ID or null"""
+    story(id: ID!): Story
+  }
+
+  type Mutation {
+    addComment(storyId: ID!, memberId: ID!, content: String!): Comment!
+  }
+  ```
+
+
+---
+
+### Schema-Evolution
+
+* In GraphQL gibt es nur _eine Version_ der API (kein `/api/v1`, `/api/v2`)
+* Das Schema kann jederzeit erweitert werden
+  * Clients fragen explizit Felder ab, d.h. durch neue Felder werden sie nicht beeinträchtigt
+* Man kann Felder mit `deprecated` markieren, um anzuzeigen, dass sie nicht genutzt werden sollen
+
+* ```graphql
+  type Query {
+    # Ausgangspunkt
+    getStoryById(id: ID!): Story
+  }
+  ```
+
+* ```graphql
+  type Query {
+    getStoryById(id: ID!): Story
+
+    # Neues Feld, beeinträchtigt bestehenden Client nicht
+    stories: [Story!]!
+  }
+  ```
+
+* ```graphql
+  type Query {
+    getStoryById(id: ID!): Story @deprecated("Use story instead")
+    story(id: ID!): Story
+
+    stories: [Story!]!
+  }
+  ```
+---
+### _Eine_ API für ganze Anwendung
+
+* Üblicherweise hat eine Anwendung *eine* GraphQL API
+  * In REST gibt es mehrere Endpunkte, die auf unterschiedliche Server verteilt sein können
+  * GraphQL soll zentrale API sein
+  * Untereinander kommunizieren die Services per REST o.ä.
+---
+
+
+             </textarea
+          >
+        </section>
+
+        <section>
+          <h2>Geschafft! 😊</h2>
+          <h3>Vielen Dank für Eure Teilnahme!</h3>
+          <h3>Viel Spaß und Erfolg mit GraphQL!</h3>
+          <p>Wenn ihr noch Fragen habt, könnt ihr mich erreichen:</p>
+          <p>
+            <a href="mailto:nils@nilshartmann.net">nils@nilshartmann.net</a>
+          </p>
+          <p>
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+          </p>
+          <p>
+            <a
+              href="https://www.linkedin.com/in/nils-hartmann-2a5738252/"
+              target="_blank"
+              >LinkedIn</a
+            >
+          </p>
+
+          <p>
+            Twitter:
+            <a href="https://twitter.com/nilshartmann" target="_blank"
+              >@nilshartmann</a
+            >
+          </p>
+        </section>
+      </div>
+    </div>
+    <script src="revealjs/reveal.js/dist/reveal.js"></script>
+    <script src="revealjs/reveal.js/plugin/notes/notes.js"></script>
+    <script src="revealjs/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="revealjs/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="revealjs/config.js"></script>
+  </body>
+</html>
