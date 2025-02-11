@@ -3,7 +3,7 @@ import {InMemoryCache} from "@apollo/experimental-nextjs-app-support";
 
 export const client = new ApolloClient({
 	cache: new InMemoryCache(),
-	uri: 'https://publy-fullstack-example.fly.dev/',
+	uri: 'https://publy-fullstack-example.fly.dev/graphql',
 });
 
 

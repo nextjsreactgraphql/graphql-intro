@@ -4,5 +4,5 @@ import {HelloWorldDocument} from "../_generated-graphql-types";
 
 test("hello world", async () => {
 	const result = await client.query({query: HelloWorldDocument});
-	expect(result.data).toBe("World")
+	expect(result.data.hello).toBe("World")
 })
