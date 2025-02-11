@@ -1,0 +1,12 @@
+query GetStories($pageNo: Int!, $o: StoryOrderBy) {
+    stories(page: $pageNo, orderBy: $o) {
+        results {
+            id
+            title
+            likes
+            image {
+                uri
+            }
+        }
+    }
+}
