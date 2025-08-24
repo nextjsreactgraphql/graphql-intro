@@ -2,7 +2,7 @@
 
 ## Schritt 1: Klonen des Repositories
 
-* `git clone https://github.com/nilshartmann/a-graphql-intro.git`
+* `git clone https://github.com/nextjsreactgraphql/graphql-intro.git`
 * Dieses Workspace enthält den Source-Code für unsere Übungen
   * Das soll der Ersatz für einen "echten" React/Next.js-Client sein
   * Das **GraphQL Backend** läuft in der Cloud (Link gebe ich euch)
