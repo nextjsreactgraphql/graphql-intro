@@ -21,7 +21,7 @@ export type G_AddCommentError = {
 };
 
 export type G_AddCommentInput = {
-  storyId: Scalars['ID']['input'];
+  articleId: Scalars['ID']['input'];
   text: Scalars['String']['input'];
 };
 
@@ -36,13 +36,97 @@ export type G_AddLikeError = {
 };
 
 export type G_AddLikeInput = {
-  storyId: Scalars['ID']['input'];
+  articleId: Scalars['ID']['input'];
 };
 
 export type G_AddLikePayload = G_AddLikeError | G_AddLikeSuccess;
 
 export type G_AddLikeSuccess = {
-  story: G_Story;
+  article: G_Article;
+};
+
+export type G_Article = G_Node & {
+  body: Scalars['String']['output'];
+  category: G_Category;
+  /**  Note: in a real GraphQL API comments would be pageable */
+  comments: Array<G_Comment>;
+  date: Scalars['DateTime']['output'];
+  /** Returns an excerpt of this article, with a maximum length of `maxLength` characters. */
+  excerpt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  image?: Maybe<G_Image>;
+  likes: Scalars['Int']['output'];
+  /**
+   * Returns a list of related articles
+   *
+   * * Note: the backend just picks three (random) articles, that might not be
+   *   related at all. In real life there would be a better algorithm or even
+   *   a human selection of related articles.
+   */
+  relatedArticles: Array<G_Article>;
+  title: Scalars['String']['output'];
+  /**
+   * Returns the number of words of this article.
+   *
+   * Note: **for demo purposes to make values more realistic, the values returned do  _not match_ the real number of words!**
+   */
+  wordCount: Scalars['Int']['output'];
+  writer: G_Writer;
+};
+
+
+export type G_ArticleExcerptArgs = {
+  maxLength?: Scalars['Int']['input'];
+};
+
+/** Defines all fields that can be used to sort the list of articles */
+export enum G_ArticleOrderBy {
+  Category = 'CATEGORY',
+  Date = 'DATE',
+  Likes = 'LIKES'
+}
+
+export type G_ArticlesResult = {
+  /** Number of the next page or empty if there is no next page */
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  /**
+   * The field that is used to sort the resulting articles from the request
+   *
+   * If the request doesn't specified an `orderBy`, it's set to the applied default value by the server.
+   */
+  orderBy: G_ArticleOrderBy;
+  /**
+   * Number of the requested page.
+   *
+   * If the request doesn't specified a page, it's set to the applied default value by the server.
+   */
+  page: Scalars['Int']['output'];
+  /**
+   * Size of the requested page (i.e. maximum number of `Article` objects returned)
+   *
+   * If the request doesn't specified a page, it's set to the applied default value by the server.
+   */
+  pageSize: Scalars['Int']['output'];
+  /**
+   * Number of the previous page or empty when the returned page is the first page, so that there
+   * is no previous page
+   */
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  /** List of articles matching the query */
+  results: Array<G_Article>;
+  /** Number of pages with the given page size */
+  totalPages: Scalars['Int']['output'];
+};
+
+/**
+ * Provides informations about the backend process.
+ *
+ * - Note: this information would not be available in a real API. Here for testing only
+ */
+export type G_BackendInfo = {
+  commitDate: Scalars['String']['output'];
+  commitId: Scalars['String']['output'];
+  commitMsg?: Maybe<Scalars['String']['output']>;
 };
 
 export enum G_Category {
@@ -52,9 +136,10 @@ export enum G_Category {
 }
 
 export type G_Comment = G_Node & {
+  article: G_Article;
   id: Scalars['ID']['output'];
-  story: G_Story;
   text: Scalars['String']['output'];
+  writer: Scalars['String']['output'];
 };
 
 export type G_Contact = G_EMailContact | G_PhoneContact;
@@ -64,6 +149,7 @@ export type G_EMailContact = {
 };
 
 export type G_Image = {
+  altText: Scalars['String']['output'];
   uri: Scalars['String']['output'];
 };
 
@@ -91,18 +177,24 @@ export type G_PhoneContact = {
 };
 
 export type G_Query = {
+  /**
+   * Returns the `Article` with the given `articleId`.
+   *
+   * - If no `articleId` is provided, the _latest_ article will be returned
+   * - If a `articleId` is provided, but there is no article with that id, `null` is returned
+   */
+  article?: Maybe<G_Article>;
+  /** Returns a list of articles */
+  articles: G_ArticlesResult;
+  /**
+   * Returns the version (git commit) of the backend process
+   *
+   * - for testing, would not be part of a real application
+   */
+  backendInfo: G_BackendInfo;
   /** For testing the API, returns a simple string */
   hello: Scalars['String']['output'];
   node?: Maybe<G_Node>;
-  /** Returns a list of stories */
-  stories: G_StoriesResult;
-  /**
-   * Returns the `Story` with the given `storyId`.
-   *
-   * - If no `storyId` is provided, the _latest_ story will be returned
-   * - If a `storyId` is provided, but there is no story with that id, `null` is returned
-   */
-  story?: Maybe<G_Story>;
   /** Returns a unique string for each request (for testing) */
   uuid: Scalars['String']['output'];
   /** Return all registered `Writers` */
@@ -110,103 +202,26 @@ export type G_Query = {
 };
 
 
-export type G_QueryNodeArgs = {
-  id: Scalars['ID']['input'];
+export type G_QueryArticleArgs = {
+  articleId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
-export type G_QueryStoriesArgs = {
-  orderBy?: InputMaybe<G_StoryOrderBy>;
+export type G_QueryArticlesArgs = {
+  orderBy?: InputMaybe<G_ArticleOrderBy>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
-export type G_QueryStoryArgs = {
-  storyId?: InputMaybe<Scalars['ID']['input']>;
+export type G_QueryNodeArgs = {
+  id: Scalars['ID']['input'];
 };
-
-export type G_StoriesResult = {
-  /** Number of the next page or empty if there is no next page */
-  nextPage?: Maybe<Scalars['Int']['output']>;
-  /**
-   * The field that is used to sort the resulting stories from the request
-   *
-   * If the request doesn't specified an `orderBy`, it's set to the applied default value by the server.
-   */
-  orderBy: G_StoryOrderBy;
-  /**
-   * Number of the requested page.
-   *
-   * If the request doesn't specified a page, it's set to the applied default value by the server.
-   */
-  page: Scalars['Int']['output'];
-  /**
-   * Size of the requested page (i.e. maximum number of `Story` objects returned)
-   *
-   * If the request doesn't specified a page, it's set to the applied default value by the server.
-   */
-  pageSize: Scalars['Int']['output'];
-  /**
-   * Number of the previous page or empty when the returned page is the first page, so that there
-   * is no previous page
-   */
-  prevPage?: Maybe<Scalars['Int']['output']>;
-  /** List of Storys matching the query */
-  results: Array<G_Story>;
-};
-
-export type G_Story = G_Node & {
-  body: Scalars['String']['output'];
-  category: G_Category;
-  /**  Note: in real GraphQL API comments would be pageable */
-  comments: Array<G_Comment>;
-  date: Scalars['DateTime']['output'];
-  /** Returns an excerpt of this story, with a maximum length of `maxLength` characters. */
-  excerpt: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  image?: Maybe<G_Image>;
-  likes: Scalars['Int']['output'];
-  title: Scalars['String']['output'];
-  /**
-   * Returns the number of words of this story.
-   *
-   * Note: **for demo purposes to make values more realistic, the values returned do  _not match_ the real number of words!**
-   */
-  wordCount: Scalars['Int']['output'];
-  writer: G_Writer;
-};
-
-
-export type G_StoryExcerptArgs = {
-  maxLength?: Scalars['Int']['input'];
-};
-
-/** Defines all fields that can be used to sort the list of stories */
-export enum G_StoryOrderBy {
-  Category = 'CATEGORY',
-  Date = 'DATE',
-  Likes = 'LIKES'
-}
 
 export type G_Writer = G_Node & {
   contact?: Maybe<G_Contact>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-};
-
-export type G_GetStoriesVariables = Exact<{
-  size: Scalars['Int']['input'];
-}>;
-
-
-export type G_GetStories = {
-  stories: {
-    nextPage?: number,
-    results: Array<{
-      id: string
-    }>
-  }
 };
 
 export type G_HelloWorldVariables = Exact<{ [key: string]: never; }>;
@@ -217,5 +232,4 @@ export type G_HelloWorld = {
 };
 
 
-export const GetStoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"size"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pageSize"},"value":{"kind":"Variable","name":{"kind":"Name","value":"size"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nextPage"}},{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<G_GetStories, G_GetStoriesVariables>;
 export const HelloWorldDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"HelloWorld"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hello"}}]}}]} as unknown as DocumentNode<G_HelloWorld, G_HelloWorldVariables>;
