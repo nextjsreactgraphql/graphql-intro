@@ -1,0 +1,13 @@
+query {
+    article {
+        title
+        excerpt
+        likes
+
+        comments {
+            text
+            writer
+        }
+
+    }
+}

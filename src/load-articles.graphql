@@ -1,0 +1,13 @@
+query LoadArticles($ps: Int!) {
+    articles(pageSize: $ps) {
+
+        results {
+
+            id
+            title
+            likes
+        }
+
+        nextPage
+    }
+}
