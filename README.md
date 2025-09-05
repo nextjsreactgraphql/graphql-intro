@@ -11,14 +11,14 @@
 
 * Im Root-Verzeichnisses dieses Workspaces die benötigten Packages installieren:
 * ```bash
-  pnpm install
+  npm install
   ```
 
 ## Schritt 3: Hello-World-Test ausführen
 
 * Im Root-Verzeichnis des Workspaces einmal den Hello-World-Test ausführen:
 * ```bash
-  pnpm hello-world-test
+  npm run hello-world-test
   ```
   
 ## Schritt 4: (Optional) IntelliJ GraphQL Plug-in installieren
